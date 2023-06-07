@@ -2,7 +2,7 @@
 ccc;
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
-soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\2';
+soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\3';
 try
     rmdir(soundPath, "s");
 end
@@ -21,7 +21,7 @@ f0 = [1e3];
 
 % --------------------------------------
 % time params, in sec
-totalDur = 0.5;
+totalDur = 0.3;
 nChangePeriod = 10;
 interval = 500e-3;
 rfTime = 5e-3;
@@ -93,6 +93,6 @@ for f0Index = 1:length(f0)
     end
 end
 
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 2, ...
-               "start-end效应部分", "第二阶段-位置", "active", "SE active2", ...
+rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 3, ...
+               "start-end效应部分", "第三阶段-时长", "active", "SE active3", ...
                3.5, 40);

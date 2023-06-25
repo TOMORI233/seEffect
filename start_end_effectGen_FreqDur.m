@@ -10,7 +10,7 @@ mkdir(soundPath);
 
 %% Params
 % freq diff
-freqDiff = 7e-4;
+freqDiff = 8e-4;
 
 % change position
 pos = [10, 20, 30, 50, 70, 80, 90] / 100;

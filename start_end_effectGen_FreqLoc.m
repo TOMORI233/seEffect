@@ -10,7 +10,7 @@ mkdir(soundPath);
 
 %% Params
 % freq diff
-freqDiff = 7e-4;
+freqDiff = 8e-4;
 
 % change position
 pos = [10, 20, 30, 50, 70, 80, 90] / 100;
@@ -57,9 +57,9 @@ for f0Index = 1:length(f0)
                [y0, zeros(1, interval * fs), y0], fs);
 
     for f1Index = 1:length(f1)
-        y1 = rowFcn(@(x) [y0(1:(x - 1) * fs / f0(f0Index)), ...
+        y1 = rowFcn(@(x) [y0(1:x * fs / f0(f0Index)), ...
                           Amp * sin(2 * pi * f1(f1Index) * (1 / fs:1 / fs:nChangePeriod / f1(f1Index))), ...
-                          y0((x + 1) * fs / f0(f0Index):end)], ...
+                          y0((x + nChangePeriod) * fs / f0(f0Index):end)], ...
                     Ns, "UniformOutput", false);
 
         % Plot
@@ -67,12 +67,12 @@ for f0Index = 1:length(f0)
         figure;
         maximizeFig;
         mSubplot(plotSize(1), plotSize(2), 1);
-        plot(y0);
+        plot(t, y0);
         for pIndex = 1:length(pos)
             mSubplot(plotSize(1), plotSize(2), pIndex + 1);
             plot(y1{pIndex});
             hold on;
-            plot((Ns(pIndex) - 1) * fs / f0(f0Index) + 1:(Ns(pIndex) - 1) * fs / f0(f0Index) + nChangePeriod * fs / f1(f1Index), ...
+            plot(Ns(pIndex) * fs / f0(f0Index) + 1:Ns(pIndex) * fs / f0(f0Index) + nChangePeriod * fs / f1(f1Index), ...
                 Amp * sin(2 * pi * f1(f1Index) * (1 / fs:1 / fs:nChangePeriod / f1(f1Index))), 'r.');
             title(['f0=', num2str(f0(f0Index)), ' | f1=', num2str(f1(f1Index)), ' | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
         end

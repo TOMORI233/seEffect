@@ -1,8 +1,8 @@
 ccc;
 
-load('20230607-1\2.mat');
+load('Data\20230613-1\2.mat');
 
-rules = readtable('rules_20230607-2.xlsx');
+rules = readtable('Data\20230613-1\rules.xlsx');
 rules = rules(rules.pID == 2, :);
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);

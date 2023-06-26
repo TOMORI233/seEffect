@@ -1,59 +1,98 @@
-%% start-end effect
+%% start-end effect pure tone
 ccc;
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
-soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\1\';
+soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\1';
+try
+    rmdir(soundPath, "s");
+end
+mkdir(soundPath);
 
-rfTime = 5e-3;
-silenceTime = 0;
-changeDur = 20e-3;
+%% Params
+% int diff
+intDiff = [0.1:0.05:0.3];
+
+% change position
+pos = [5, 50, 95] / 100;
+
+% freq params, in Hz
+fs = 48e3;
+f0 = [1e3, 2e3, 3e3];
+
+% --------------------------------------
+% time params, in sec
+totalDur = 0.5;
+nChangePeriod = 15;
 interval = 500e-3;
+rfTime = 5e-3;
+
+% wave amp, in volt
 Amp = 0.5;
 
-fs = 48e3;
-dur = 0.5;
-t = 0:1 / fs:dur;
+%% Generate tones
+t = 1 / fs:1 / fs:totalDur;
+pos = reshape(pos, [length(pos), 1]);
+n = 0;
 
-f = 1e3;
-intDiff = [0.1:0.05:0.25, 0.8]; % delta amp, in percentage
+for f0Index = 1:length(f0)
+    y0 = Amp * sin(2 * pi * f0(f0Index) * t);
+    y0 = genRiseFallEdge(y0, fs, rfTime, "both");
 
-y_silence = zeros(1, fix(silenceTime * fs));
-y0 = Amp * sin(2 * pi * f * t);
-y0 = [y_silence, genRiseFallEdge(y0, fs, rfTime, "both"), y_silence];
+    nPeriods = totalDur * f0(f0Index);
+    Ns = nPeriods * pos;
 
-mkdir(soundPath);
-audiowrite([soundPath, ord(1, :), ...
-            '_freq-', num2str(f), ...
-            '_locN-NAN_Diff-0.wav'], [y0, zeros(1, fix(interval * fs)), y0], fs);
-
-%% 
-N_Total = length(y0);
-Ns = fix([1, 8, 15] * N_Total / 16);
-
-for index1 = 1:length(Ns)
-    N = Ns(index1) - fix(changeDur * fs / 2);
-    
-    for index2 = 1:length(intDiff)
-        y1 = [y0(1:N - 1), (1 + intDiff(index2)) * y0(N:N + fix(changeDur * fs) - 1), y0(N + fix(changeDur * fs):end)];
-        yF = [y0, zeros(1, fix(interval * fs)), y1];
-        
-        audiowrite([soundPath, ord(1 + (index1 - 1) * length(intDiff) + index2, :), ...
-                    '_freq-', num2str(f), ...
-                    '_locN-', num2str(N), ...
-                    '_Diff-', num2str(100 * intDiff(index2)), ...
-                    '.wav'], yF, fs);
+    if any(mod(Ns, 1) ~= 0) || any(Ns <= rfTime * f0(f0Index)) || any(Ns >= nPeriods - rfTime * f0(f0Index))
+        error("Invalid change posistion");
     end
-    
-    % forward
-    figure;
-    subplot(2, 1, 1);
-    plot(y0);
-    subplot(2, 1, 2);
-    plot(y1);
-    hold on;
-    plot(N:N + fix(changeDur * fs) - 1, y1(N:N + fix(changeDur * fs) - 1), 'r.');
+
+    Amp1 = Amp * (1 + intDiff);
+    n = n + 1;
+    % control
+    audiowrite(fullfile(soundPath, [ord(n, :), ...
+                        '_f0-', num2str(f0(f0Index)), ...
+                        '_deltaAmp-NaN', ...
+                        '_nChangePeriod-NaN', ...
+                        '_pos-NaN', ...
+                        '_dur-', num2str(totalDur), '.wav']), ...
+               [y0, zeros(1, interval * fs), y0], fs);
+
+    for ampIndex = 1:length(Amp1)
+        y1 = rowFcn(@(x) [y0(1:x * fs / f0(f0Index)), ...
+                          Amp1(ampIndex) * sin(2 * pi * f0(f0Index) * (1 / fs:1 / fs:nChangePeriod / f0(f0Index))), ...
+                          y0((x + nChangePeriod) * fs / f0(f0Index) + 1:end)], ...
+                    Ns, "UniformOutput", false);
+
+        % Plot
+        plotSize = autoPlotSize(length(pos) + 1);
+        figure;
+        maximizeFig;
+        mSubplot(plotSize(1), plotSize(2), 1);
+        plot(y0);
+        for pIndex = 1:length(pos)
+            mSubplot(plotSize(1), plotSize(2), pIndex + 1);
+            plot(y1{pIndex});
+            hold on;
+            plot(Ns(pIndex) * fs / f0(f0Index) + 1:Ns(pIndex) * fs / f0(f0Index) + nChangePeriod * fs / f0(f0Index), ...
+                 Amp1(ampIndex) * sin(2 * pi * f0(f0Index) * (1 / fs:1 / fs:nChangePeriod / f0(f0Index))), 'r.');
+            title(['Relative \DeltaAmp=', num2str(Amp1(ampIndex) / Amp - 1), ' | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
+        end
+        scaleAxes("y", "symOpt", "max", "cutoffRange", [-1, 1]);
+
+        % Export
+        wave = cellfun(@(x) [y0, zeros(1, interval * fs), x], y1, "UniformOutput", false);
+        filenames = rowFcn(@(x, y) [ord(n + y, :), ...
+                                    '_f0-', num2str(f0(f0Index)), ...
+                                    '_deltaAmp-', num2str(Amp1(ampIndex) / Amp - 1), ...
+                                    '_nChangePeriod-', num2str(nChangePeriod), ...
+                                    '_pos-', num2str(x * 100), ...
+                                    '_dur-', num2str(totalDur), '.wav'], ...
+                           pos, (1:length(pos))', "UniformOutput", false);
+
+        cellfun(@(x, y) audiowrite(fullfile(soundPath, x), y, fs), filenames, wave, "UniformOutput", false);
+        n = n + length(y1);
+    end
 end
 
 rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 1, ...
                "start-end效应部分", "第一阶段-阈值", "active", "SE active1", ...
-               3.5, 30);
+               3.5, 10);

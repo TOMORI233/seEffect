@@ -1,32 +1,26 @@
 ccc;
 
-load('20230517-2\1.mat');
+DATAROOTPATH = 'Data\20230718-1';
 
-rules = readtable('rules_20230517-2.xlsx');
-insertDur = 20;
-freq = mode(rules.freq);
-Diffs = rules.Diff;
-locN = rules.locN;
-controlIdx = find(Diffs == 0);
-locN(isnan(locN)) = 0; % replace NAN with 0
-Locs = unique(locN);
+pID = 101;
+DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
+load(DATAPATH, "trialsData", "protocol", "rules", "pID");
+rules = rules(rules.pID == pID, :);
+dur = mode(rules.dur);
+f0 = mode(rules.f0);
+nChangePeriod = mode(rules.nChangePeriod);
+controlIdx = find(isnan(rules.deltaAmp));
 
 for tIndex = 1:length(trialsData)
     trialAll(tIndex, 1).trialNum = tIndex;
 
-    idx = trialsData(tIndex).code - 3;
-    trialAll(tIndex).Diff = Diffs(idx);
-
-    switch locN(idx)
-        case Locs(1)
-            trialAll(tIndex).loc = "NONE";
-        case Locs(2)
-            trialAll(tIndex).loc = "HEAD";
-        case Locs(3)
-            trialAll(tIndex).loc = "MID";
-        case Locs(4)
-            trialAll(tIndex).loc = "TAIL";
+    idx = find(rules.code == trialsData(tIndex).code);
+    
+    for vIndex = 1:length(rules.Properties.VariableNames)
+        trialAll(tIndex).(rules.Properties.VariableNames{vIndex}) = rules(idx, :).(rules.Properties.VariableNames{vIndex});
     end
+
+    trialAll(tIndex).key = trialsData(tIndex).key;
 
     if trialsData(tIndex).key == 0
         trialAll(tIndex).correct = false;
@@ -47,41 +41,54 @@ disp(['Miss: ', num2str(sum(([trialAll.miss])) / length(trialAll))]);
 trialAll([trialAll.miss]) = [];
 
 %% 
-trialsControl = trialAll([trialAll.loc] == "NONE");
-trialsMid = trialAll([trialAll.loc] == "MID");
-trialsHead = trialAll([trialAll.loc] == "HEAD");
-trialsTail = trialAll([trialAll.loc] == "TAIL");
+trialsControl = trialAll(isnan([trialAll.pos]));
+trialsMid = trialAll([trialAll.pos] == 50);
+trialsHead = trialAll([trialAll.pos] < 50);
+trialsTail = trialAll([trialAll.pos] > 50);
 
-Diffs = unique([trialAll.Diff]);
-Diffs(Diffs == 0) = [];
-ratioMid = zeros(1, length(Diffs));
-ratioHead = zeros(1, length(Diffs));
-ratioTail = zeros(1, length(Diffs));
-for index = 1:length(Diffs)
-    temp = trialsMid([trialsMid.Diff] == Diffs(index));
-    ratioMid(index) = sum([temp.correct]) / length(temp);
+deltaAmp = unique([trialAll.deltaAmp]);
+deltaAmp(isnan(deltaAmp)) = [];
+ratioMid = zeros(1, length(deltaAmp));
+ratioHead = zeros(1, length(deltaAmp));
+ratioTail = zeros(1, length(deltaAmp));
+ratioAll = zeros(1, length(deltaAmp));
+for dIndex = 1:length(deltaAmp)
+    temp = trialsMid([trialsMid.deltaAmp] == deltaAmp(dIndex));
+    ratioMid(dIndex) = sum([temp.correct]) / length(temp);
 
-    temp = trialsHead([trialsHead.Diff] == Diffs(index));
-    ratioHead(index) = sum([temp.correct]) / length(temp);
+    temp = trialsHead([trialsHead.deltaAmp] == deltaAmp(dIndex));
+    ratioHead(dIndex) = sum([temp.correct]) / length(temp);
 
-    temp = trialsTail([trialsTail.Diff] == Diffs(index));
-    ratioTail(index) = sum([temp.correct]) / length(temp);
+    temp = trialsTail([trialsTail.deltaAmp] == deltaAmp(dIndex));
+    ratioTail(dIndex) = sum([temp.correct]) / length(temp);
+
+    temp = trialAll([trialAll.deltaAmp] == deltaAmp(dIndex));
+    ratioAll(dIndex) = sum([temp.correct]) / length(temp);
 end
+deltaAmp = [0, deltaAmp];
+ratioControl = 1 - sum([trialsControl.correct]) / length(trialsControl);
+ratioMid =  [ratioControl, ratioMid];
+ratioHead = [ratioControl, ratioHead];
+ratioTail = [ratioControl, ratioTail];
+ratioAll =  [ratioControl, ratioAll];
+
+fitRes = fitBehavior(ratioAll, deltaAmp);
 
 figure;
 maximizeFig;
 mSubplot(1, 1, 1, 'shape', 'square-min', 'alignment', 'center-left');
-plot(Diffs, ratioMid, 'r.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Middle');
+plot(deltaAmp, ratioMid, 'r.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Middle');
 set(gca, 'FontSize', 12);
 hold on;
-plot(Diffs, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
-plot(Diffs, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
+plot(deltaAmp, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
+plot(deltaAmp, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
+plot(fitRes(1, :), fitRes(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit');
 legend("Location", "best");
-title(['SDM behavior: ', num2str(insertDur), '-ms change in ', num2str(freq), ' Hz tone | Control: ', ...
+title(['SDM behavior: ', num2str(nChangePeriod / f0 * 1000), '-ms change in ', num2str(f0), ' Hz tone | Control: ', ...
        num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);
-xlabel('Difference in amplitude (%)');
+xlabel('deltaAmperence in amplitude (%)');
 ylabel('Push for difference ratio');
-xlim([Diffs(1), Diffs(end - 1)]);
+xlim([deltaAmp(1), deltaAmp(end - 1)]);
 ylim([0, 1]);
 
 mSubplot(2, 1, 1, [0.4, 1], 'alignment', 'center-right');

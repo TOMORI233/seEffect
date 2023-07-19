@@ -1,8 +1,9 @@
 %% start-end effect pure tone
 ccc;
 
-ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
-soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\2';
+ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
+pID = 103;
+soundPath = strcat('D:\Education\Lab\Projects\EEG\EEG App\sounds\', num2str(pID));
 try
     rmdir(soundPath, "s");
 end
@@ -10,14 +11,15 @@ mkdir(soundPath);
 
 %% Params
 % int diff
-intDiff = 0.15;
+intDiff = 0.15; % th
 
 % change position
 pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
 
 % freq params, in Hz
 fs = 48e3;
-f0 = [1e3];
+% f0 = [400, 1e3, 2e3, 4e3, 8e3];
+f0 = 1e3;
 
 % --------------------------------------
 % time params, in sec
@@ -93,6 +95,6 @@ for f0Index = 1:length(f0)
     end
 end
 
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 2, ...
+rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 103, ...
                "start-end效应部分", "第二阶段-位置", "active", "SE active2", ...
-               3.5, 30);
+               4, 30);

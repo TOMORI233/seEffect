@@ -1,8 +1,8 @@
 ccc;
 
-DATAROOTPATH = 'Data\20230718-1';
+DATAROOTPATH = 'Data\20230723-1';
 
-pID = 101;
+pID = 102;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
 load(DATAPATH, "trialsData", "protocol", "rules", "pID");
 rules = rules(rules.pID == pID, :);
@@ -37,7 +37,7 @@ for tIndex = 1:length(trialsData)
     end
 end
 
-disp(['Miss: ', num2str(sum(([trialAll.miss])) / length(trialAll))]);
+disp(['Miss: ', num2str(sum([trialAll.miss])), '/', num2str(length(trialAll))]);
 trialAll([trialAll.miss]) = [];
 
 %% 
@@ -78,17 +78,17 @@ figure;
 maximizeFig;
 mSubplot(1, 1, 1, 'shape', 'square-min', 'alignment', 'center-left');
 plot(deltaAmp, ratioMid, 'r.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Middle');
-set(gca, 'FontSize', 12);
+set(gca, 'FontSize', 14);
 hold on;
 plot(deltaAmp, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
 plot(deltaAmp, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
-plot(fitRes(1, :), fitRes(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit');
-legend("Location", "best");
+plot(fitRes(1, :), fitRes(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit (For pre-exp)');
+legend("Location", "northwest");
 title(['SDM behavior: ', num2str(nChangePeriod / f0 * 1000), '-ms change in ', num2str(f0), ' Hz tone | Control: ', ...
        num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);
-xlabel('deltaAmperence in amplitude (%)');
+xlabel('Difference in amplitude');
 ylabel('Push for difference ratio');
-xlim([deltaAmp(1), deltaAmp(end - 1)]);
+xlim([deltaAmp(1), deltaAmp(end)]);
 ylim([0, 1]);
 
 mSubplot(2, 1, 1, [0.4, 1], 'alignment', 'center-right');
@@ -105,7 +105,7 @@ mHistogram({rtMidC; ...
            "DisplayName", {['Middle (Mean at ', num2str(mean(rtMidC)), ')'], ...
                            ['Head (Mean at ', num2str(mean(rtHeadC)), ')'], ...
                            ['Tail (Mean at ', num2str(mean(rtTailC)), ')']});
-set(gca, 'FontSize', 12);
+set(gca, 'FontSize', 14);
 title(['Correct | one-way ANOVA p=', num2str(pC)]);
 ylabel('Count');
 xlim([0, 2]);

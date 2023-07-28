@@ -11,7 +11,7 @@ mkdir(soundPath);
 
 %% Params
 % int diff
-intDiff = 0.15; % th
+intDiff = 0.3; % th
 
 % change position
 pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;

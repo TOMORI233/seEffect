@@ -9,6 +9,9 @@
 #ignore Data
 Data/
 
+#ignore Docs
+Docs/
+
 #ignore following files;
 *.asv
 *.slxc

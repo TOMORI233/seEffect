@@ -1,8 +1,11 @@
 %% start-end effect pure tone
 ccc;
 
+pID = 102; % 1 kHz
+% pID = 103; % x kHz, for random part
+
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
-pID = 102;
+
 soundPath = strcat('D:\Education\Lab\Projects\EEG\EEG App\sounds\', num2str(pID));
 try
     rmdir(soundPath, "s");
@@ -20,8 +23,15 @@ pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 48e3;
-% f0 = [400, 1e3, 2e3, 4e3, 8e3];
-f0 = 1e3;
+f0 = [400, 1e3, 2e3, 4e3, 6e3];
+
+if pID == 102
+    f0 = 1e3;
+elseif pID == 103
+    f0 = f0(randperm(length(f0), 1));
+else
+    error("Undefined pID");
+end
 
 % --------------------------------------
 % time params, in sec
@@ -34,6 +44,7 @@ rfTime = 5e-3;
 Amp = 0.5;
 
 %% Generate tones
+disp(strcat("Using ", num2str(f0), " kHz as base frequency"));
 t = 1 / fs:1 / fs:totalDur;
 pos = reshape(pos, [length(pos), 1]);
 n = 0;
@@ -96,7 +107,3 @@ for f0Index = 1:length(f0)
         n = n + length(y1);
     end
 end
-
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", pID, ...
-               "start-end效应部分", "第一阶段-阈值", "active", "SE active1", ...
-               4, 30);

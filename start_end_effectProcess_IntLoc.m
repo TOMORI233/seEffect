@@ -1,8 +1,8 @@
 ccc;
 
-DATAROOTPATH = 'Data\20230723-1';
+DATAROOTPATH = 'Data\20230731-1';
 
-pID = 103;
+pID = 104;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
 load(DATAPATH, "trialsData", "protocol", "rules", "pID");
 rules = rules(rules.pID == pID, :);

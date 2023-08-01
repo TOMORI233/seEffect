@@ -1,6 +1,6 @@
 ccc;
 
-DATAROOTPATH = 'Data\20230731-1';
+DATAROOTPATH = 'Data\20230801-2';
 
 pID = 103;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
@@ -40,3 +40,4 @@ trialAll([trialAll.miss]) = [];
 
 trialAllTemp = trialAll;
 run("start_end_effectPlot_IntTh.m");
+disp(['Threshold for ', num2str(mode([trialAll.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);

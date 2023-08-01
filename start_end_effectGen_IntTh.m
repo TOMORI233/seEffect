@@ -1,8 +1,7 @@
 %% start-end effect pure tone
 ccc;
 
-% pID = 102; % 1 kHz
-pID = 103; % x kHz, for random part
+pID = 102; % 1 kHz
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
 
@@ -21,23 +20,16 @@ mkdir(soundPath);
 % intDiff = [0.3, 0.35, 0.4, 0.45, 0.6]; % for th around 0.4
 
 % fs = 384e3
-intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.05
-% intDiff = [0.05, 0.06, 0.07, 0.08, 0.15]; % for th around 0.07
-% intDiff = [0.07, 0.08, 0.09, 0.1, 0.15]; % for th around 0.09
+intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.04~0.05
+% intDiff = [0.05, 0.06, 0.07, 0.08, 0.15]; % for th around 0.06~0.07
+% intDiff = [0.07, 0.08, 0.09, 0.1, 0.15]; % for th around 0.08~0.09
 
 % change position
 pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 384e3;
-
-if pID == 102
-    f0 = 1e3;
-elseif pID == 103
-    f0 = 4e3;
-else
-    error("Undefined pID");
-end
+f0 = 1e3;
 
 % --------------------------------------
 % time params, in sec
@@ -113,3 +105,5 @@ for f0Index = 1:length(f0)
         n = n + length(y1);
     end
 end
+
+run("rulesGen.m");

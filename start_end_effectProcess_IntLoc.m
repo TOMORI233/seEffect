@@ -1,6 +1,6 @@
 ccc;
 
-DATAROOTPATH = 'Data\20230731-1';
+DATAROOTPATH = 'Data\20230801-2';
 
 pID = 104;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);

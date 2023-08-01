@@ -21,6 +21,7 @@ fs = 48e3;
 f0 = [400, 2e3, 4e3, 6e3];
 f0 = [1e3, f0(randperm(length(f0), 1))];
 disp(strcat("Using ", numstrcat(f0, ", "), " Hz as base frequency"));
+save("f0.mat", "f0");
 
 % --------------------------------------
 % time params, in sec
@@ -95,3 +96,5 @@ for f0Index = 1:length(f0)
         n = n + length(y1);
     end
 end
+
+run("rulesGen.m");

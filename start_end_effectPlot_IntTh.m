@@ -44,7 +44,7 @@ hold on;
 plot(deltaAmp, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
 plot(deltaAmp, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
 plot(fitRes(1, :), fitRes(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit (For pre-exp)');
-legend("Location", "northwest");
+legend("Location", "best");
 title(['SDM behavior: ', char(numstrcat(nChangePeriod ./ f0 * 1000, ',')), '-ms change in ', char(numstrcat(f0, ',')), ' Hz tone | Control: ', ...
        num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);
 xlabel('Difference in amplitude');

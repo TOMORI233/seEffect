@@ -1,8 +1,10 @@
 %% start-end effect pure tone
 ccc;
 
+pID = 103; % x kHz, for random part
+
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
-pID = 104;
+
 soundPath = strcat('D:\Education\Lab\Projects\EEG\EEG App\sounds\', num2str(pID));
 try
     rmdir(soundPath, "s");
@@ -11,14 +13,24 @@ mkdir(soundPath);
 
 %% Params
 % int diff
-intDiff = validateInput("Input threshold", @(x) isscalar(x) && isnumeric(x), "UI", "on"); % th
+
+% fs = 48e3
+% intDiff = [0.1, 0.15, 0.2, 0.3, 0.5]; % for th around 0.2
+% intDiff = [0.2, 0.25, 0.3, 0.35, 0.5]; % for th around 0.3
+% intDiff = [0.3, 0.35, 0.4, 0.45, 0.6]; % for th around 0.4
+
+% fs = 384e3
+intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.04~0.05
+% intDiff = [0.05, 0.06, 0.07, 0.08, 0.15]; % for th around 0.06~0.07
+% intDiff = [0.07, 0.08, 0.09, 0.1, 0.15]; % for th around 0.08~0.09
 
 % change position
-pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
+pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 384e3;
-f0 = 1e3;
+load("f0.mat", "f0");
+f0 = f0(2);
 
 % --------------------------------------
 % time params, in sec
@@ -31,6 +43,7 @@ rfTime = 5e-3;
 Amp = 0.5;
 
 %% Generate tones
+disp(strcat("Using ", num2str(f0), " Hz as base frequency"));
 t = 1 / fs:1 / fs:totalDur;
 pos = reshape(pos, [length(pos), 1]);
 n = 0;

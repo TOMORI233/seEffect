@@ -17,7 +17,7 @@ intDiff = validateInput("Input threshold", @(x) isscalar(x) && isnumeric(x), "UI
 pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
 
 % freq params, in Hz
-fs = 384e3;
+fs = 48e3;
 f0 = 1e3;
 
 % --------------------------------------

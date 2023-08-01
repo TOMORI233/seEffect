@@ -28,7 +28,7 @@ intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.04~0.05
 pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
-fs = 384e3;
+fs = 48e3;
 load("f0.mat", "f0");
 f0 = f0(2);
 

@@ -9,6 +9,9 @@
 #ignore Data
 Data/
 
+#ignore temp mat
+/*.mat
+
 #ignore Docs
 Docs/
 

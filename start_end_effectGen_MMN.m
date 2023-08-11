@@ -13,10 +13,7 @@ mkdir(soundPath);
 
 %% Params
 % int diff
-% fs = 384e3
-intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.04~0.05
-% intDiff = [0.05, 0.06, 0.07, 0.08, 0.15]; % for th around 0.06~0.07
-% intDiff = [0.07, 0.08, 0.09, 0.1, 0.15]; % for th around 0.08~0.09
+intDiff = validateInput("Input threshold", @(x) isscalar(x) && isnumeric(x), "UI", "on"); % th
 
 % change position
 pos = [5, 50, 95] / 100;

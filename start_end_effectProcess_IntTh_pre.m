@@ -2,7 +2,7 @@ ccc;
 
 DATAROOTPATH = 'Data\20230801-2';
 
-pID = 102;
+pID = 101;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
 load(DATAPATH, "trialsData", "protocol", "rules", "pID");
 rules = rules(rules.pID == pID, :);
@@ -38,6 +38,12 @@ end
 disp(['Miss: ', num2str(sum([trialAll.miss])), '/', num2str(length(trialAll))]);
 trialAll([trialAll.miss]) = [];
 
-trialAllTemp = trialAll;
+trialAllTemp = trialAll([trialAll.f0] == 1e3);
 run("start_end_effectPlot_IntTh.m");
-disp(['Threshold for ', num2str(mode([trialAll.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+disp(['Threshold for 1000 Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+
+trialAllTemp = trialAll([trialAll.f0] ~= 1e3);
+if ~isempty(trialAllTemp)
+    run("start_end_effectPlot_IntTh.m");
+    disp(['Threshold for ', num2str(mode([trialAllTemp.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+end

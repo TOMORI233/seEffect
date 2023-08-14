@@ -1,8 +1,10 @@
 %% start-end effect pure tone
 ccc;
 
+pID = 102; % 1 kHz
+
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
-pID = 102;
+
 soundPath = strcat('D:\Education\Lab\Projects\EEG\EEG App\sounds\', num2str(pID));
 try
     rmdir(soundPath, "s");
@@ -11,16 +13,22 @@ mkdir(soundPath);
 
 %% Params
 % int diff
+
+% fs = 48e3
 % intDiff = [0.1, 0.15, 0.2, 0.3, 0.5]; % for th around 0.2
 % intDiff = [0.2, 0.25, 0.3, 0.35, 0.5]; % for th around 0.3
-intDiff = [0.3, 0.35, 0.4, 0.45, 0.6]; % for th around 0.4
+% intDiff = [0.3, 0.35, 0.4, 0.45, 0.6]; % for th around 0.4
+
+% fs = 384e3
+intDiff = [0.03, 0.04, 0.05, 0.06, 0.15]; % for th around 0.04~0.05
+% intDiff = [0.05, 0.06, 0.07, 0.08, 0.15]; % for th around 0.06~0.07
+% intDiff = [0.07, 0.08, 0.09, 0.1, 0.15]; % for th around 0.08~0.09
 
 % change position
 pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 48e3;
-% f0 = [400, 1e3, 2e3, 4e3, 8e3];
 f0 = 1e3;
 
 % --------------------------------------
@@ -34,6 +42,7 @@ rfTime = 5e-3;
 Amp = 0.5;
 
 %% Generate tones
+disp(strcat("Using ", num2str(f0), " Hz as base frequency"));
 t = 1 / fs:1 / fs:totalDur;
 pos = reshape(pos, [length(pos), 1]);
 n = 0;
@@ -97,6 +106,4 @@ for f0Index = 1:length(f0)
     end
 end
 
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", pID, ...
-               "start-end效应部分", "第一阶段-阈值", "active", "SE active1", ...
-               4, 30);
+run("rulesGen.m");

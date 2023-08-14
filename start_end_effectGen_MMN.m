@@ -1,8 +1,10 @@
 %% start-end effect pure tone
 ccc;
 
+pID = 105; % 1 kHz
+
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:1000)'));
-pID = 104;
+
 soundPath = strcat('D:\Education\Lab\Projects\EEG\EEG App\sounds\', num2str(pID));
 try
     rmdir(soundPath, "s");
@@ -14,23 +16,28 @@ mkdir(soundPath);
 intDiff = validateInput("Input threshold", @(x) isscalar(x) && isnumeric(x), "UI", "on"); % th
 
 % change position
-pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
+pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 48e3;
 f0 = 1e3;
 
+% MMN params
+nSTD = 6;
+ISI = 0.8; % sec
+
 % --------------------------------------
 % time params, in sec
 totalDur = 0.5;
 nChangePeriod = 15;
-interval = 500e-3;
+interval = ISI - totalDur;
 rfTime = 5e-3;
 
 % wave amp, in volt
 Amp = 0.5;
 
 %% Generate tones
+disp(strcat("Using ", num2str(f0), " Hz as base frequency"));
 t = 1 / fs:1 / fs:totalDur;
 pos = reshape(pos, [length(pos), 1]);
 n = 0;
@@ -48,14 +55,22 @@ for f0Index = 1:length(f0)
 
     Amp1 = Amp * (1 + intDiff);
     n = n + 1;
+    
+    ySTD = [];
+    for sIndex = 1:nSTD
+        ySTD = [ySTD, y0, zeros(1, fix(interval * fs))];
+    end
+
     % control
     audiowrite(fullfile(soundPath, [ord(n, :), ...
                         '_f0-', num2str(f0(f0Index)), ...
                         '_deltaAmp-NaN', ...
                         '_nChangePeriod-NaN', ...
                         '_pos-NaN', ...
-                        '_dur-', num2str(totalDur), '.wav']), ...
-               [y0, zeros(1, interval * fs), y0], fs);
+                        '_dur-', num2str(totalDur), ...
+                        '_nSTD-', num2str(nSTD), ...
+                        '_ISI-', num2str(ISI), '.wav']), ...
+               [ySTD, y0], fs);
 
     for ampIndex = 1:length(Amp1)
         y1 = rowFcn(@(x) [y0(1:x * fs / f0(f0Index)), ...
@@ -80,13 +95,15 @@ for f0Index = 1:length(f0)
         scaleAxes("y", "symOpt", "max", "cutoffRange", [-1, 1]);
 
         % Export
-        wave = cellfun(@(x) [y0, zeros(1, interval * fs), x], y1, "UniformOutput", false);
+        wave = cellfun(@(x) [ySTD, x], y1, "UniformOutput", false);
         filenames = rowFcn(@(x, y) [ord(n + y, :), ...
                                     '_f0-', num2str(f0(f0Index)), ...
                                     '_deltaAmp-', num2str(Amp1(ampIndex) / Amp - 1), ...
                                     '_nChangePeriod-', num2str(nChangePeriod), ...
                                     '_pos-', num2str(x * 100), ...
-                                    '_dur-', num2str(totalDur), '.wav'], ...
+                                    '_dur-', num2str(totalDur), ...
+                                    '_nSTD-', num2str(nSTD), ...
+                                    '_ISI-', num2str(ISI), '.wav'], ...
                            pos, (1:length(pos))', "UniformOutput", false);
 
         cellfun(@(x, y) audiowrite(fullfile(soundPath, x), y, fs), filenames, wave, "UniformOutput", false);

@@ -10,8 +10,8 @@ mkdir(soundPath);
 
 %% Params
 % freq diff
-% To make sure nPoints in 10 periods maintain 479, 1000 < f1 < 1000+2.0877
-freqDiff = [20, 40, 60, 80] / 10000;
+% To make sure nPoints in 10 periods maintain 479, 1000 < f1 < 1002.0877
+freqDiff = [2, 4, 6, 8] / 10000;
 
 % change position
 pos = [10, 50, 90] / 100;

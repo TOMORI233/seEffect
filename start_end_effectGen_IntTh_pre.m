@@ -11,15 +11,17 @@ mkdir(soundPath);
 
 %% Params
 % int diff
-intDiff = [0.05:0.05:0.6];
+intDiff = [0.03:0.01:0.1];
 
 % change position
 pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
 fs = 48e3;
-% f0 = [400, 1e3, 2e3, 4e3, 8e3];
-f0 = 1e3;
+f0 = [400, 2e3, 4e3, 6e3];
+f0 = [1e3, f0(randperm(length(f0), 1))];
+disp(strcat("Using ", numstrcat(f0, ", "), " Hz as base frequency"));
+save("f0.mat", "f0");
 
 % --------------------------------------
 % time params, in sec
@@ -95,6 +97,4 @@ for f0Index = 1:length(f0)
     end
 end
 
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", pID, ...
-               "start-end效应部分", "预实验阶段-阈值", "active", "SE active0", ...
-               4, 2);
+run("rulesGen.m");

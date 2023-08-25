@@ -40,10 +40,10 @@ trialAll([trialAll.miss]) = [];
 
 trialAllTemp = trialAll([trialAll.f0] == 1e3);
 run("start_end_effectPlot_IntTh.m");
-disp(['Threshold for 1000 Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+disp(['Threshold for 1000 Hz is ', num2str(findBehaviorThreshold(fitResMid, 0.5))]);
 
 trialAllTemp = trialAll([trialAll.f0] ~= 1e3);
 if ~isempty(trialAllTemp)
     run("start_end_effectPlot_IntTh.m");
-    disp(['Threshold for ', num2str(mode([trialAllTemp.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+    disp(['Threshold for ', num2str(mode([trialAllTemp.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitResMid, 0.5))]);
 end

@@ -12,7 +12,6 @@ deltaAmp(isnan(deltaAmp)) = [];
 ratioMid = zeros(1, length(deltaAmp));
 ratioHead = zeros(1, length(deltaAmp));
 ratioTail = zeros(1, length(deltaAmp));
-ratioAll = zeros(1, length(deltaAmp));
 for dIndex = 1:length(deltaAmp)
     temp = trialsMid([trialsMid.deltaAmp] == deltaAmp(dIndex));
     ratioMid(dIndex) = sum([temp.correct]) / length(temp);
@@ -22,18 +21,16 @@ for dIndex = 1:length(deltaAmp)
 
     temp = trialsTail([trialsTail.deltaAmp] == deltaAmp(dIndex));
     ratioTail(dIndex) = sum([temp.correct]) / length(temp);
-
-    temp = trialAllTemp([trialAllTemp.deltaAmp] == deltaAmp(dIndex));
-    ratioAll(dIndex) = sum([temp.correct]) / length(temp);
 end
 deltaAmp = [0, deltaAmp];
 ratioControl = 1 - sum([trialsControl.correct]) / length(trialsControl);
 ratioMid =  [ratioControl, ratioMid];
 ratioHead = [ratioControl, ratioHead];
 ratioTail = [ratioControl, ratioTail];
-ratioAll =  [ratioControl, ratioAll];
 
-fitRes = fitBehavior(ratioMid, deltaAmp);
+fitResMid  = fitBehavior(ratioMid , deltaAmp);
+fitResHead = fitBehavior(ratioHead, deltaAmp);
+fitResTail = fitBehavior(ratioTail, deltaAmp);
 
 figure;
 maximizeFig;
@@ -43,7 +40,7 @@ set(gca, 'FontSize', 14);
 hold on;
 plot(deltaAmp, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
 plot(deltaAmp, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
-plot(fitRes(1, :), fitRes(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit(Middle)');
+plot(fitResMid(1, :), fitResMid(2, :), 'g.-', 'LineWidth', 2, 'DisplayName', 'Fit(Middle)');
 legend("Location", "best");
 title(['DMS behavior: ', char(numstrcat(nChangePeriod ./ f0 * 1000, ',')), '-ms change in ', char(numstrcat(f0, ',')), ' Hz tone | Control: ', ...
        num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);

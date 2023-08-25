@@ -19,7 +19,6 @@ maximizeFig;
 mSubplot(1, 1, 1, 'shape', 'square-min', 'alignment', 'center-left');
 plot(pos, ratio, "k.-", "LineWidth", 2, "MarkerSize", 20);
 set(gca, 'FontSize', 12);
-title('');
 xlabel('Normalized change position in percentage (%)');
 ylabel('Push for difference ratio');
 ylim([0, 1]);

@@ -40,4 +40,4 @@ trialAll([trialAll.miss]) = [];
 
 trialAllTemp = trialAll;
 run("start_end_effectPlot_IntTh.m");
-disp(['Threshold for ', num2str(mode([trialAll.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitRes, 0.5))]);
+disp(['Threshold for ', num2str(mode([trialAll.f0])), ' Hz is ', num2str(findBehaviorThreshold(fitResMid, 0.5))]);

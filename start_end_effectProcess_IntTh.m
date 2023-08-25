@@ -1,12 +1,11 @@
 ccc;
 
-DATAROOTPATH = 'Data\20230801-2';
+DATAROOTPATH = pathConfig;
 
 pID = 102;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
 load(DATAPATH, "trialsData", "protocol", "rules", "pID");
 rules = rules(rules.pID == pID, :);
-dur = mode(rules.dur);
 controlIdx = find(isnan(rules.deltaAmp));
 
 for tIndex = 1:length(trialsData)

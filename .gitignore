@@ -15,6 +15,9 @@ Data/
 #ignore Docs
 Docs/
 
+#ignore Figures
+Figures/
+
 #ignore following files;
 *.asv
 *.slxc

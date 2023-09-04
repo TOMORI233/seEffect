@@ -42,11 +42,15 @@ for sIndex = 1:length(data)
     plotRawWaveMultiEEG(chData, window, ISI * nSTD, [], EEGPos);
     addLines2Axes(struct("X", {ISI * nSTD + pos(1) / 100 * dur * 1000; ...
                                ISI * nSTD + pos(2) / 100 * dur * 1000; ...
-                               ISI * nSTD + pos(3) / 100 * dur * 1000}))
+                               ISI * nSTD + pos(3) / 100 * dur * 1000}));
     scaleAxes("x", [ISI * nSTD - 100, ISI * nSTD + 1000]);
     scaleAxes("y", [-10, 10], "symOpt", "max", "uiOpt", "show");
 
     mPrint(gcf, fullfile(FIGURESINGLEPATHs(sIndex), "105.jpg"), "-djpeg", "-r300");
+
+    plotRawWaveMultiEEG(chData, window, ISI * nSTD, [], EEGPos);
+    scaleAxes("x", [-100, ISI * nSTD + 1000]);
+    scaleAxes("y", [-10, 10], "symOpt", "max", "uiOpt", "show");
 end
 
 %% Copy figures

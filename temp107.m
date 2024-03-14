@@ -1,6 +1,6 @@
 ccc;
 
-DATAROOTPATH = "D:\Education\Lab\Projects\Human behavior\Start-end effect\Data\raw\20230830-2023083001\";
+DATAROOTPATH = "D:\Education\Lab\Projects\Human behavior\Start-end effect\DATA\raw\20230830-2023083001\";
 
 pID = 107;
 DATAPATH = fullfile(DATAROOTPATH, [num2str(pID), '.mat']);
@@ -10,7 +10,7 @@ dur = mode(rules.dur);
 controlIdx = find(isnan(rules.deltaAmp));
 trialAll = generalProcessFcn(trialsData, rules, controlIdx);
 
-%% Load EEG Data
+%% Load EEG DATA
 EEG = readbdfdata({'data.bdf', 'evt.bdf'}, char(strcat(fullfile(DATAROOTPATH, num2str(pID)), '\')));
 
 %% Params

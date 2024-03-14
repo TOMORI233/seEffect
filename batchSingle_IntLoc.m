@@ -1,13 +1,13 @@
 ccc;
 
-MATPATHs = dir("Data\raw\**\104.mat");
+MATPATHs = dir("DATA\raw\**\104.mat");
 MATPATHs(contains({MATPATHs.folder}, "preliminary")) = [];
 
 SUBJECTs = cellfun(@(x) split(x, '\'), {MATPATHs.folder}', "UniformOutput", false);
 SUBJECTs = cellfun(@(x) string(x{end}), SUBJECTs);
 
-SAVEPATHs = strrep(string({MATPATHs.folder}'), '\Data\raw\', '\Data\temp\');
-FIGUREPATHs = strrep(string({MATPATHs.folder}'), '\Data\raw\', '\Figures\Single\');
+SAVEPATHs = strrep(string({MATPATHs.folder}'), '\DATA\raw\', '\DATA\MAT DATA\single\');
+FIGUREPATHs = strrep(string({MATPATHs.folder}'), '\DATA\raw\', '\Figures\Single\');
 MATPATHs = string(arrayfun(@(x) fullfile(x.folder, x.name), MATPATHs, "UniformOutput", false));
 
 arrayfun(@mkdir, SAVEPATHs);

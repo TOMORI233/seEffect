@@ -1,9 +1,9 @@
 ccc;
 
-MATPATHs = dir("Data\temp\**\105_res.mat");
+MATPATHs = dir("DATA\MAT DATA\single\**\105_res.mat");
 SUBJECTs = cellfun(@(x) split(x, '\'), {MATPATHs.folder}', "UniformOutput", false);
 SUBJECTs = cellfun(@(x) string(x{end}), SUBJECTs);
-FIGURESINGLEPATHs = strrep(string({MATPATHs.folder}'), '\Data\temp\', '\Figures\Single\');
+FIGURESINGLEPATHs = strrep(string({MATPATHs.folder}'), '\DATA\MAT DATA\single\', '\Figures\Single\');
 MATPATHs = string(arrayfun(@(x) fullfile(x.folder, x.name), MATPATHs, "UniformOutput", false));
 
 colors = {[0.5, 0.5, 0.5], [0, 0, 1], [1, 0, 0], [0, 0, 0]};

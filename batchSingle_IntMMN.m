@@ -1,16 +1,16 @@
 ccc;
 
-MATPATHs = dir("Data\raw\**\105.mat");
+MATPATHs = dir("DATA\raw\**\105.mat");
 MATPATHs(contains({MATPATHs.folder}, "preliminary")) = [];
 
-EEGPATHs = dir("Data\raw\**\data.bdf");
+EEGPATHs = dir("DATA\raw\**\data.bdf");
 EEGPATHs = string({EEGPATHs.folder}');
 
 SUBJECTs = cellfun(@(x) split(x, '\'), {MATPATHs.folder}', "UniformOutput", false);
 SUBJECTs = cellfun(@(x) string(x{end}), SUBJECTs);
 
-SAVEPATHs = strrep(string({MATPATHs.folder}'), '\Data\raw\', '\Data\temp\');
-FIGUREPATHs = strrep(string({MATPATHs.folder}'), '\Data\raw\', '\Figures\Single\');
+SAVEPATHs = strrep(string({MATPATHs.folder}'), '\DATA\raw\', '\DATA\MAT DATA\single\');
+FIGUREPATHs = strrep(string({MATPATHs.folder}'), '\DATA\raw\', '\Figures\Single\');
 MATPATHs = string(arrayfun(@(x) fullfile(x.folder, x.name), MATPATHs, "UniformOutput", false));
 
 arrayfun(@mkdir, SAVEPATHs);
@@ -29,7 +29,7 @@ chTh = 0.2;
 colors = {[0.5, 0.5, 0.5], [0, 0, 1], [1, 0, 0], [0, 0, 0]};
 
 %% Daily processing
-for mIndex = 2:length(MATPATHs)
+for mIndex = 1:length(MATPATHs)
     load(MATPATHs(mIndex), "trialsData", "rules");
 
     controlIdx = find(isnan(rules.deltaAmp));

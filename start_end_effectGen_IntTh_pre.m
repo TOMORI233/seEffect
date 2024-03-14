@@ -17,9 +17,10 @@ intDiff = [0.03:0.01:0.1];
 pos = [5, 50, 95] / 100;
 
 % freq params, in Hz
-fs = 48e3;
+fs = 44.1e3;
 f0 = [400, 2e3, 4e3, 6e3];
-f0 = [1e3, f0(randperm(length(f0), 1))];
+% f0 = [1e3, f0(randperm(length(f0), 1))];
+f0 = [1e3, 4e3];
 disp(strcat("Using ", numstrcat(f0, ", "), " Hz as base frequency"));
 save("f0.mat", "f0");
 

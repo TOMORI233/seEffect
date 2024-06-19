@@ -1,9 +1,8 @@
-ccc;
+clear; clc;
 
-load('20230613-2\1.mat');
+% load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061901\1.mat');
+load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061902\1.mat');
 
-rules = readtable('rules_20230613-2.xlsx');
-rules = rules(rules.pID == 1, :);
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);
 f1 = rules.f1;
@@ -70,25 +69,30 @@ for index = 1:length(f1)
     temp = trialsTail([trialsTail.f1] == f1(index));
     ratioTail(index) = sum([temp.correct]) / length(temp);
 end
+ratioMid =  [1 - sum([trialsControl.correct]) / length(trialsControl), ratioMid];
+ratioHead = [1 - sum([trialsControl.correct]) / length(trialsControl), ratioHead];
+ratioTail = [1 - sum([trialsControl.correct]) / length(trialsControl), ratioTail];
+
+X = [0, (f1 - f0) / f0 * 100];
+fitResMid = fitBehavior(ratioMid, X);
 
 figure;
 maximizeFig;
 mSubplot(1, 1, 1, 'shape', 'square-min', 'alignment', 'center-left');
-X = (f1 - f0) / f0 * 100;
-plot(X, ratioMid, 'r.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Middle');
 set(gca, 'FontSize', 12);
 hold on;
-plot(X, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Head');
-plot(X, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail');
+plot(X, ratioMid, 'r.-', 'LineWidth', 2, "MarkerSize", 20, 'DisplayName', 'Middle');
+plot(X, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 20, 'DisplayName', 'Head');
+plot(X, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 20, 'DisplayName', 'Tail');
+plot(fitResMid(1, :), fitResMid(2, :), "g", "LineWidth", 2, "DisplayName", "Fit (Middle)");
 legend("Location", "northwest");
-title(['SDM behavior: ', num2str(nChangePeriod), ' period change in ', num2str(f0), ' Hz tone | Control: ', ...
-       num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);
+title(['DMS task| ', num2str(nChangePeriod), '-period change in ', num2str(f0), ' Hz tone']);
 xlabel('Difference in frequency (%)');
 ylabel('Push for difference ratio');
 ylim([0, 1]);
 
 mSubplot(2, 1, 1, [0.4, 1], 'alignment', 'center-right');
-rtMidC = [trialsMid([trialsMid.correct]).RT]';
+rtMidC  = [trialsMid([trialsMid.correct]).RT]';
 rtHeadC = [trialsHead([trialsHead.correct]).RT]';
 rtTailC = [trialsTail([trialsTail.correct]).RT]';
 pC = anova1([rtMidC; rtHeadC; rtTailC], ...
@@ -97,7 +101,7 @@ pC = anova1([rtMidC; rtHeadC; rtTailC], ...
 mHistogram({rtMidC; ...
             rtHeadC; ...
             rtTailC}, ...
-           "Color", {'r', 'b', 'k'}, ...
+           "FaceColor", {'r', 'b', 'k'}, ...
            "DisplayName", {['Middle (Mean at ', num2str(mean(rtMidC)), ')'], ...
                            ['Head (Mean at ', num2str(mean(rtHeadC)), ')'], ...
                            ['Tail (Mean at ', num2str(mean(rtTailC)), ')']});
@@ -107,7 +111,7 @@ ylabel('Count');
 xlim([0, 2]);
 
 mSubplot(2, 1, 2, [0.4, 1], 'alignment', 'center-right');
-rtMidW = [trialsMid(~[trialsMid.correct]).RT]';
+rtMidW  = [trialsMid(~[trialsMid.correct]).RT]';
 rtHeadW = [trialsHead(~[trialsHead.correct]).RT]';
 rtTailW = [trialsTail(~[trialsTail.correct]).RT]';
 pW = anova1([rtMidW; rtHeadW; rtTailW], ...
@@ -116,7 +120,7 @@ pW = anova1([rtMidW; rtHeadW; rtTailW], ...
 mHistogram({rtMidW; ...
             rtHeadW; ...
             rtTailW}, ...
-           "Color", {'r', 'b', 'k'}, ...
+           "FaceColor", {'r', 'b', 'k'}, ...
            "DisplayName", {['Middle (Mean at ', num2str(mean(rtMidW)), ')'], ...
                            ['Head (Mean at ', num2str(mean(rtHeadW)), ')'], ...
                            ['Tail (Mean at ', num2str(mean(rtTailW)), ')']});

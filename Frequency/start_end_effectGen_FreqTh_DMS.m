@@ -10,20 +10,19 @@ mkdir(soundPath);
 
 %% Params
 % freq diff
-% To make sure nPoints in 10 periods maintain 479, 1000 < f1 < 1002.0877
-freqDiff = [2, 4, 6, 8] / 10000;
+freqDiff = [1, 2, 3, 4, 6] / 100;
 
-% change position
+% change position (center)
 pos = [10, 50, 90] / 100;
 
 % freq params, in Hz
-fs = 48e3;
-f0 = [2e3];
+fs = 384e3;
+f0 = [1e3];
 
 % --------------------------------------
 % time params, in sec
 totalDur = 0.5;
-nChangePeriod = 10;
+nChangePeriod = 20;
 interval = 500e-3;
 rfTime = 5e-3;
 
@@ -40,9 +39,9 @@ for f0Index = 1:length(f0)
     y0 = genRiseFallEdge(y0, fs, rfTime, "both");
 
     nPeriods = totalDur * f0(f0Index);
-    Ns = nPeriods * pos;
+    Ns = nPeriods * pos - nChangePeriod / 2;
 
-    if any(mod(Ns, 1) ~= 0) || any(Ns <= rfTime * f0(f0Index)) || any(Ns >= nPeriods - rfTime * f0(f0Index))
+    if any(mod(Ns, 1) ~= 0) || any(Ns < rfTime * f0(f0Index)) || any(Ns > nPeriods - rfTime * f0(f0Index) - nChangePeriod)
         error("Invalid change posistion");
     end
 
@@ -65,8 +64,7 @@ for f0Index = 1:length(f0)
 
         % Plot
         plotSize = autoPlotSize(length(pos) + 1);
-        figure;
-        maximizeFig;
+        figure("WindowState", "maximized");
         mSubplot(plotSize(1), plotSize(2), 1);
         plot(y0);
         for pIndex = 1:length(pos)
@@ -93,7 +91,3 @@ for f0Index = 1:length(f0)
         n = n + length(y1);
     end
 end
-
-rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\rules.xlsx", 1, ...
-               "start-end效应部分", "第一阶段-阈值", "active", "SE active1", ...
-               3.5, 40);

@@ -38,7 +38,7 @@ for f0Index = 1:length(f0)
     y0 = genRiseFallEdge(y0, fs, rfTime, "both");
 
     nPeriods = totalDur * f0(f0Index);
-    Ns = nPeriods * pos - nChangePeriod / 2;
+    Ns = fix(nPeriods * pos) - nChangePeriod / 2;
 
     if any(mod(Ns, 1) ~= 0) || any(Ns < rfTime * f0(f0Index)) || any(Ns > nPeriods - rfTime * f0(f0Index) - nChangePeriod)
         error("Invalid change posistion");

@@ -1,12 +1,14 @@
 clear; clc;
 
-% load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061901\1.mat');
-load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061902\1.mat');
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\1.mat"));
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061902\1.mat"));
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240620-2024062001\1.mat"));
 
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);
 f1 = rules.f1;
 pos = rules.pos;
+dur = rules.dur(1);
 controlIdx = find(isnan(f1));
 pos(isnan(pos)) = 0; % replace NAN with 0
 Locs = unique(pos);
@@ -86,7 +88,7 @@ plot(X, ratioHead, 'b.-', 'LineWidth', 2, "MarkerSize", 20, 'DisplayName', 'Head
 plot(X, ratioTail, 'k.-', 'LineWidth', 2, "MarkerSize", 20, 'DisplayName', 'Tail');
 plot(fitResMid(1, :), fitResMid(2, :), "g", "LineWidth", 2, "DisplayName", "Fit (Middle)");
 legend("Location", "northwest");
-title(['DMS task| ', num2str(nChangePeriod), '-period change in ', num2str(f0), ' Hz tone']);
+title(['DMS task | ', num2str(nChangePeriod), '-period change in ', num2str(dur * 1000), '-ms ', num2str(f0), ' Hz tone']);
 xlabel('Difference in frequency (%)');
 ylabel('Push for difference ratio');
 ylim([0, 1]);

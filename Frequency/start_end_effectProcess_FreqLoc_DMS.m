@@ -1,6 +1,6 @@
 clear; clc;
 
-load("D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061901\2.mat");
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\2.mat"));
 
 propNames = rules.Properties.VariableNames(6:end);
 controlCode = rules.code(isnan(rules.pos));

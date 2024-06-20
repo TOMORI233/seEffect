@@ -1,7 +1,7 @@
 clear; clc;
 
-% load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061901\11.mat');
-load('D:\Education\Lab\Projects\EEG\EEG App\20240619-2024061902\11.mat');
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\11.mat"));
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061902\11.mat"));
 
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);

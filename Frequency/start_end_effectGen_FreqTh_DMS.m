@@ -13,11 +13,11 @@ mkdir(soundPath);
 freqDiff = [1, 2, 3, 4, 6] / 100;
 
 % change position (center)
-pos = [5, 50, 95] / 100;
+pos = [10, 50, 90] / 100;
 
 % freq params, in Hz
 fs = 384e3;
-f0 = [1e3];
+f0 = [4e3];
 
 % --------------------------------------
 % time params, in sec
@@ -31,7 +31,7 @@ Amp = 0.5;
 
 %% Generate tones
 t = 1 / fs:1 / fs:totalDur;
-pos = reshape(pos, [length(pos), 1]);
+pos = pos(:);
 n = 0;
 
 for f0Index = 1:length(f0)

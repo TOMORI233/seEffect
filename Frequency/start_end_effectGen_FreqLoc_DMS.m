@@ -31,7 +31,7 @@ Amp = 0.5;
 
 %% Generate tones
 t = 1 / fs:1 / fs:totalDur;
-pos = reshape(pos, [length(pos), 1]);
+pos = pos(:);
 n = 0;
 
 for f0Index = 1:length(f0)

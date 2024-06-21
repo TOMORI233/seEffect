@@ -1,0 +1,98 @@
+%% start-end effect complex tone
+ccc;
+
+ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
+soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\11';
+try
+    rmdir(soundPath, "s");
+end
+mkdir(soundPath);
+
+%% Params
+% freq diff
+freqDiff = [5, 10, 20, 30, 40] / 100;
+
+% change position (center)
+pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
+
+% freq params, in Hz
+fs = 97656;
+f0 = 500;
+
+% freq rank
+nRank = 5;
+
+% --------------------------------------
+% time params, in sec
+totalDur = 0.5;
+tChange = 10e-3;
+rfTime = 5e-3;
+
+% wave amp, in volt
+Amp = 0.1;
+
+%% Generate tones
+t = 1 / fs:1 / fs:totalDur;
+pos = pos(:);
+
+y0 = Amp * sin(2 * pi * f0 * 2 .^ (0:nRank)' .* t);
+y0 = sum(y0, 1);
+y0 = genRiseFallEdge(y0, fs, rfTime, "both");
+
+% start index
+Ns = fix((totalDur * pos - tChange / 2) * fs);
+nChange = fix(tChange * fs);
+
+if any(Ns <= rfTime * fs) || any(Ns + nChange >= length(y0) - rfTime * fs)
+    error("Invalid change posistion");
+end
+
+% cwt
+[Y0, F] = cwt(y0, 'amor', fs);
+
+n = 1;
+% control
+audiowrite(fullfile(soundPath, [ord(n, :), ...
+           '_f0-', num2str(f0), ...
+           '_freqDiff-NaN', ...
+           '_tChange-NaN', ...
+           '_pos-NaN', ...
+           '_dur-', num2str(totalDur), '.wav']), ...
+           y0, fs);
+
+for fIndex = 1:length(freqDiff)
+    y1 = cell(length(Ns), 1);
+    for pIndex = 1:length(Ns)
+        temp = Y0;
+        temp(:, Ns(pIndex):Ns(pIndex) + nChange - 1) = temp(:, Ns(pIndex):Ns(pIndex) + nChange - 1) * (1 + freqDiff(fIndex));
+        y1{pIndex} = icwt(temp, 'amor');
+    end
+
+    % Plot
+    plotSize = autoPlotSize(length(Ns) + 1);
+    figure("WindowState", "maximized");
+    mSubplot(plotSize(1), plotSize(2), 1, "margin_bottom", 0.2);
+    plot(y0);
+    for pIndex = 1:length(Ns)
+        mSubplot(plotSize(1), plotSize(2), pIndex + 1, "margin_bottom", 0.2);
+        plot(y1{pIndex});
+        hold on;
+        plot(Ns(pIndex):Ns(pIndex) + nChange - 1, ...
+             y1{pIndex}(Ns(pIndex):Ns(pIndex) + nChange - 1), 'r.');
+        set(gca, "XLimitMethod", "tight");
+        title(['df=', num2str(freqDiff(fIndex) * 100), '% | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
+    end
+    scaleAxes("y", [-0.6, 0.6]);
+
+    % Export
+    filenames = rowFcn(@(x, y) [ord(n + y, :), ...
+                       '_f0-', num2str(f0), ...
+                       '_freqDiff-', num2str(freqDiff(fIndex) * 100), ...
+                       '_tChange-', num2str(tChange), ...
+                       '_pos-', num2str(x * 100), ...
+                       '_dur-', num2str(totalDur), '.wav'], ...
+                       pos, (1:length(pos))', "UniformOutput", false);
+
+    cellfun(@(x, y) audiowrite(fullfile(soundPath, x), y, fs), filenames, y1, "UniformOutput", false);
+    n = n + length(y1);
+end

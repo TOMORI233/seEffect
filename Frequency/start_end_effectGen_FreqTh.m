@@ -71,7 +71,7 @@ for f0Index = 1:length(f0)
             plot(y1{pIndex});
             hold on;
             plot(Ns(pIndex) * fs / f0(f0Index) + 1:Ns(pIndex) * fs / f0(f0Index) + nChangePeriod * fs / f1(f1Index), ...
-                Amp * sin(2 * pi * f1(f1Index) * (1 / fs:1 / fs:nChangePeriod / f1(f1Index))), 'r.');
+                 Amp * sin(2 * pi * f1(f1Index) * (1 / fs:1 / fs:nChangePeriod / f1(f1Index))), 'r.');
             title(['f0=', num2str(f0(f0Index)), ' | f1=', num2str(f1(f1Index)), ' | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
         end
         scaleAxes("y", [-0.6, 0.6]);

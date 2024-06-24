@@ -1,4 +1,4 @@
-%% start-end effect complex tone
+%% start-end effect complex tone - intensity
 ccc;
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
@@ -9,9 +9,8 @@ end
 mkdir(soundPath);
 
 %% Params
-% freq diff
-% freqDiff = [1, 2, 3, 4, 6] / 100;
-freqDiff = [2, 4] / 100;
+% intensity diff
+deltaAmp = [20, 40] / 100;
 
 % change position (center)
 pos = [5, 10, 15, 20, 30, 50, 70, 80, 85, 90, 95] / 100;
@@ -54,16 +53,16 @@ n = 1;
 % control
 audiowrite(fullfile(soundPath, [ord(n, :), ...
            '_f0-', num2str(f0), ...
-           '_freqDiff-NaN', ...
+           '_deltaAmp-NaN', ...
            '_nChangePeriod-NaN', ...
            '_pos-NaN', ...
            '_dur-', num2str(totalDur), '.wav']), ...
            resampleData(y0, fs0, fs), fs);
 
-for fIndex = 1:length(freqDiff)
+for dIndex = 1:length(deltaAmp)
     y1 = cell(length(Ns), 1);
     for pIndex = 1:length(Ns)
-        temp = sum(Amp * sin(2 * pi * f0 * (1 + freqDiff(fIndex)) * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / (f0 * (1 + freqDiff(fIndex))))), 1);
+        temp = sum(Amp * (1 + deltaAmp(dIndex)) * sin(2 * pi * f0 * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / f0)), 1); % amp
         y1{pIndex} = [y0(1:Ns(pIndex) * fs0 / f0), temp, y0((Ns(pIndex) + nChangePeriod) * fs0 / f0:end)];
     end
 
@@ -77,11 +76,11 @@ for fIndex = 1:length(freqDiff)
         mSubplot(plotSize(1), plotSize(2), pIndex + 1, "margin_bottom", 0.2);
         plot(y1{pIndex});
         hold on;
-        plot(Ns(pIndex) * fs0 / f0 + 1:Ns(pIndex) * fs0 / f0 + nChangePeriod * fs0 / (f0 * (1 + freqDiff(fIndex))), ...
-             sum(Amp * sin(2 * pi * f0 * (1 + freqDiff(fIndex)) * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / (f0 * (1 + freqDiff(fIndex))))), 1), ...
+        plot(Ns(pIndex) * fs0 / f0 + 1:Ns(pIndex) * fs0 / f0 + nChangePeriod * fs0 / (f0 * (1 + deltaAmp(dIndex))), ...
+             sum(Amp * sin(2 * pi * f0 * (1 + deltaAmp(dIndex)) * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / (f0 * (1 + deltaAmp(dIndex))))), 1), ...
              'r.');
         set(gca, "XLimitMethod", "tight");
-        title(['df=', num2str(freqDiff(fIndex) * 100), '% | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
+        title(['df=', num2str(deltaAmp(dIndex) * 100), '% | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
     end
     scaleAxes("y", [-0.6, 0.6]);
 
@@ -91,7 +90,7 @@ for fIndex = 1:length(freqDiff)
     % Export
     filenames = rowFcn(@(x, y) [ord(n + y, :), ...
                        '_f0-', num2str(f0), ...
-                       '_freqDiff-', num2str(freqDiff(fIndex) * 100), ...
+                       '_deltaAmp-', num2str(deltaAmp(dIndex) * 100), ...
                        '_nChangePeriod-', num2str(nChangePeriod), ...
                        '_pos-', num2str(x * 100), ...
                        '_dur-', num2str(totalDur), '.wav'], ...

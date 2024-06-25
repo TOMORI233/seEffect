@@ -76,13 +76,13 @@ for dIndex = 1:length(deltaAmp)
         mSubplot(plotSize(1), plotSize(2), pIndex + 1, "margin_bottom", 0.2);
         plot(y1{pIndex});
         hold on;
-        plot(Ns(pIndex) * fs0 / f0 + 1:Ns(pIndex) * fs0 / f0 + nChangePeriod * fs0 / (f0 * (1 + deltaAmp(dIndex))), ...
-             sum(Amp * sin(2 * pi * f0 * (1 + deltaAmp(dIndex)) * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / (f0 * (1 + deltaAmp(dIndex))))), 1), ...
+        plot(Ns(pIndex) * fs0 / f0 + 1:Ns(pIndex) * fs0 / f0 + nChangePeriod * fs0 / f0, ...
+             sum(Amp * (1 + deltaAmp(dIndex)) * sin(2 * pi * f0 * 2 .^ (0:nRank)' .* (1 / fs0:1 / fs0:nChangePeriod / f0)), 1), ...
              'r.');
         set(gca, "XLimitMethod", "tight");
         title(['df=', num2str(deltaAmp(dIndex) * 100), '% | pos=', strrep(rats(pos(pIndex)), ' ', '')]);
     end
-    scaleAxes("y", [-0.6, 0.6]);
+    scaleAxes("y", "symOpt", "max");
 
     % Resample
     y1 = cellfun(@(x) resampleData(x, fs0, fs), y1, "UniformOutput", false);

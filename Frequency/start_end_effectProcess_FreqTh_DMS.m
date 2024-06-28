@@ -2,7 +2,11 @@ clear; clc;
 
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\1.mat"));
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061902\1.mat"));
-load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240620-2024062001\1.mat"));
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240620-2024062001\1.mat"));
+
+% Ishrat
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\161.mat")); % 1k
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\164.mat")); % 4k
 
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);

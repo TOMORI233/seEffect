@@ -2,7 +2,7 @@
 ccc;
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
-soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\161';
+soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\163';
 try
     rmdir(soundPath, "s");
 end
@@ -10,10 +10,10 @@ mkdir(soundPath);
 
 %% Params
 % freq diff
-freqDiff = [1, 2, 3, 4, 6] / 100;
+freqDiff = validateInput("Input threshold (%)", @(x) isscalar(x) && isnumeric(x), "UI", "on") / 100;
 
-% change position (center)
-pos = [10, 50, 90] / 100;
+% change position
+pos = [5, 10, 15, 25, 35, 50, 65, 75, 85, 90, 95] / 100;
 
 % freq params, in Hz
 fs = 384e3;
@@ -21,7 +21,7 @@ f0 = [1e3];
 
 % --------------------------------------
 % time params, in sec
-totalDur = 0.5;
+totalDur = 1;
 nChangePeriod = 20;
 interval = 500e-3;
 rfTime = 5e-3;
@@ -64,9 +64,10 @@ for f0Index = 1:length(f0)
 
         % Plot
         plotSize = autoPlotSize(length(pos) + 1);
-        figure("WindowState", "maximized");
+        figure;
+        maximizeFig;
         mSubplot(plotSize(1), plotSize(2), 1);
-        plot(y0);
+        plot(t, y0);
         for pIndex = 1:length(pos)
             mSubplot(plotSize(1), plotSize(2), pIndex + 1);
             plot(y1{pIndex});
@@ -93,5 +94,5 @@ for f0Index = 1:length(f0)
 end
 
 rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\start-end effect\rules_SE.xlsx", ...
-               161, "Start-end效应", "2-阈值阶段(1k)", "active", "SE th-1k", ...
-               3.5, 25, "forceOpt", "on");
+               163, "Start-end效应", "3-时长补充(1k)", "active", "SE dur-1k", ...
+               4.5, 25, "forceOpt", "on");

@@ -1,39 +1,23 @@
 clear; clc;
 
-load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\2.mat"));
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\2.mat"));
 
-propNames = rules.Properties.VariableNames(6:end);
-controlCode = rules.code(isnan(rules.pos));
+% Ishrat
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\162.mat")); % 0.5s
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\163.mat")); % 1s
 
-for tIndex = 1:length(trialsData)
-    trialAll(tIndex, 1).trialNum = tIndex;
-    
-    for pIndex = 1:length(propNames)
-        trialAll(tIndex).(propNames{pIndex}) = rules([rules.code] == trialsData(tIndex).code, :).(propNames{pIndex});
-    end
-
-    if trialsData(tIndex).key == 0
-        trialAll(tIndex).correct = false;
-        trialAll(tIndex).miss = true;
-        trialAll(tIndex).RT = inf;
-    else
-        trialAll(tIndex).miss = false;
-        if (~ismember(trialAll(tIndex).code, controlCode) && trialsData(tIndex).key == 37) || (ismember(trialAll(tIndex).code, controlCode) && trialsData(tIndex).key == 39)
-            trialAll(tIndex).correct = true;
-        else
-            trialAll(tIndex).correct = false;
-        end
-        trialAll(tIndex).RT = trialsData(tIndex).push - trialsData(tIndex).offset;
-    end
-end
+dur = mode(rules.dur); % sec
+f0 = mode(rules.f0);
+f1 = rules.f1;
+controlIdx = find(isnan(f1));
+trialAll = generalProcessFcn(trialsData, rules, controlIdx);
 
 disp(['Miss: ', num2str(sum([trialAll.miss])), '/' , num2str(length(trialAll))]);
 trialAll([trialAll.miss]) = [];
 
 %% 
-trialsControl = trialAll(ismember([trialAll.code], controlCode));
+trialsControl = trialAll(isnan([trialAll.f1]));
 nChangePeriod = mode([trialAll.nChangePeriod]);
-f0 = unique([trialAll.f0]);
 pos = unique([trialAll.pos]);
 pos(isnan(pos)) = [];
 
@@ -52,7 +36,7 @@ xlabel('Normalized change position');
 ylabel('Push for difference ratio');
 ylim([0, 1]);
 xlim([0, 1]);
-title(['DMS task | ', num2str(nChangePeriod), ' period change in ', num2str(f0), ' Hz tone | Control: ', ...
+title(['DMS task | ', num2str(nChangePeriod), ' period change in ', num2str(1000 * dur), '-ms, ' , num2str(f0), ' Hz tone | Control: ', ...
        num2str(sum([trialsControl.correct])), '/', num2str(length(trialsControl))]);
 
 mSubplot(2, 1, 1, [0.4, 1], 'alignment', 'center-right');

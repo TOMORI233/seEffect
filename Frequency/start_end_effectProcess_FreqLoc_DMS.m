@@ -1,10 +1,16 @@
 clear; clc;
 
-% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\2.mat"));
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\162.mat")); % 0.5 s
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\163.mat")); % 1 s
 
 % Ishrat
-load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\162.mat")); % 0.5s
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\162.mat")); % 0.5s
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\163.mat")); % 1s
+
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240704-2024070402\162.mat"));
+
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\162.mat"));
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\163.mat"));
 
 dur = mode(rules.dur); % sec
 f0 = mode(rules.f0);

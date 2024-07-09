@@ -48,9 +48,9 @@ X = ([f0, f1] - f0) / f0 * 100; % percentage
 figure;
 mSubplot(1, 1, 1, "shape", "square-min");
 hold on;
-errorbar(X, mean(ratioHead, 1, "omitnan"), SE(ratioHead, 1, true), "Color", "b", "LineWidth", 2, "DisplayName", "Head");
-errorbar(X, mean(ratioMiddle, 1, "omitnan"), SE(ratioMiddle, 1, true), "Color", "r", "LineWidth", 2, "DisplayName", "Middle");
-errorbar(X, mean(ratioTail, 1, "omitnan"), SE(ratioTail, 1, true), "Color", "k", "LineWidth", 2, "DisplayName", "Tail");
+errorbar(X, mean(ratioHead, 1, "omitnan"), SE(ratioHead, 1, "omitnan"), "Color", "b", "LineWidth", 2, "DisplayName", "Head");
+errorbar(X, mean(ratioMiddle, 1, "omitnan"), SE(ratioMiddle, 1, "omitnan"), "Color", "r", "LineWidth", 2, "DisplayName", "Middle");
+errorbar(X, mean(ratioTail, 1, "omitnan"), SE(ratioTail, 1, "omitnan"), "Color", "k", "LineWidth", 2, "DisplayName", "Tail");
 legend;
 xlabel('Difference in frequency (%)');
 ylabel('Ratio of change detection');

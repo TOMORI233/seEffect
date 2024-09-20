@@ -2,7 +2,7 @@
 ccc;
 
 ord = arrayfun(@(x) strrep(x, ' ', '0'), num2str((1:100)'));
-soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\165';
+soundPath = 'D:\Education\Lab\Projects\EEG\EEG App\sounds\166';
 try
     rmdir(soundPath, "s");
 end
@@ -21,7 +21,7 @@ f0 = [1e3];
 
 % --------------------------------------
 % time params, in sec
-totalDur = 0.5;
+totalDur = 1;
 nChangePeriod = 20;
 rfTime = 5e-3;
 
@@ -92,5 +92,5 @@ for f0Index = 1:length(f0)
 end
 
 rulesGenerator(soundPath, "D:\Education\Lab\Projects\EEG\EEG App\rules\start-end effect\rules_SE.xlsx", ...
-               165, "Start-end效应", "6-位置阶段EEG(1k)", "passive", "SE loc-EEG 1k", ...
-               1.5, 40, "forceOpt", "on");
+               166, "Start-end效应", "7-时长补充EEG(1k)", "passive", "SE dur-EEG 1k", ...
+               2, 40, "forceOpt", "on");

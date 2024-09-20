@@ -6,10 +6,8 @@ clear; clc;
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061902\161.mat"));
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061902\164.mat"));
 
-% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240620-2024062001\161.mat"));
-
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\161.mat"));
-load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\164.mat"));
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\164.mat"));
 
 % Ishrat
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\161.mat")); % 1k
@@ -17,6 +15,9 @@ load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\164.mat"));
 
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\161.mat")); % 1k
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\164.mat")); % 4k
+
+% load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\161.mat")); % 1k
+load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\164.mat")); % 1k
 
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);

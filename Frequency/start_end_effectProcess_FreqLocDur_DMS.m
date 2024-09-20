@@ -3,8 +3,8 @@ clear; clc;
 % data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\162.mat")); % 0.5s
 % data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240628-2024062801\163.mat")); % 1s
 
-data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\162.mat")); % 0.5s
-data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\163.mat")); % 1s
+% data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\162.mat")); % 0.5s
+% data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\163.mat")); % 1s
 
 % data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\162.mat")); % 0.5s
 % data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240619-2024061901\163.mat")); % 1s
@@ -14,6 +14,11 @@ data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\163.
 
 % data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\162.mat"));
 % data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240708-2024070801\163.mat"));
+
+data1 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\162.mat"));
+data2 = load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\163.mat"));
+
+
 
 %% 
 f0 = mode(data1.rules.f0);

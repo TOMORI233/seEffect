@@ -1,6 +1,7 @@
-ccc;
+% ccc;
+clear; clc;
 
-data1  = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\162.mat"));
+data1 = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\162.mat"));
 data2 = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\163.mat"));
 
 %% 
@@ -51,6 +52,10 @@ mSubplot(1, 2, 1, "shape", "square-min");
 errorbar(pos1 - 2, mean(ratio1, 1), SE(ratio1, 1), "Color", "b", "LineWidth", 2, "DisplayName", ['Duration ', num2str(dur1), ' ms']);
 hold on;
 errorbar(pos2 + 2, mean(ratio2, 1), SE(ratio2, 1), "Color", "r", "LineWidth", 2, "DisplayName", ['Duration ', num2str(dur2), ' ms']);
+% h = plot(pos1, ratio1, "Color", "b", "LineWidth", 1, "LineStyle", "--", "Marker", "o");
+% setLegendOff(h);
+% h = plot(pos2, ratio2, "Color", "r", "LineWidth", 1, "LineStyle", "--", "Marker", "o");
+% setLegendOff(h);
 legend;
 set(gca, 'FontSize', 12);
 xlabel('Change center relative to onset (ms)');
@@ -61,6 +66,20 @@ mSubplot(1, 2, 2, "shape", "square-min");
 errorbar(pos1 - dur1 - 2, mean(ratio1, 1), SE(ratio1, 1), "Color", "b", "LineWidth", 2, "DisplayName", ['Duration ', num2str(dur1), ' ms']);
 hold on;
 errorbar(pos2 - dur2 + 2, mean(ratio2, 1), SE(ratio2, 1), "Color", "r", "LineWidth", 2, "DisplayName", ['Duration ', num2str(dur2), ' ms']);
+% h = plot(pos1 - dur1, ratio1, "Color", "b", "LineWidth", 1, "LineStyle", "--", "Marker", "o");
+% setLegendOff(h);
+% h = plot(pos2 - dur2, ratio2, "Color", "r", "LineWidth", 1, "LineStyle", "--", "Marker", "o");
+% setLegendOff(h);
 set(gca, 'FontSize', 12);
 xlabel('Change center relative to offset (ms)');
 ylabel('Normalized ratio of change detection');
+
+%% 
+% relative to onset
+pos_onset = pos1(ismember(pos1, pos2))';
+[~, p_onset] = rowFcn(@(x, y) ttest(x, y), ratio1(:, ismember(pos1, pos2))', ratio2(:, ismember(pos2, pos1))');
+
+% relative to offset
+pos_offset = (pos1 - dur1)';
+pos_offset = pos_offset(ismember(pos1 - dur1, pos2 - dur2));
+[~, p_offset] = rowFcn(@(x, y) ttest(x, y), ratio1(:, ismember(pos1 - dur1, pos2 - dur2))', ratio2(:, ismember(pos2 - dur2, pos1 - dur1))');

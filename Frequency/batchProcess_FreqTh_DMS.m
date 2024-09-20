@@ -1,6 +1,8 @@
-ccc;
+% ccc;
+clear; clc;
 
 data = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\161.mat"));
+% data = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\164.mat"));
 data = arrayfun(@(x) load(fullfile(x.folder, x.name)), data);
 trialAll = arrayfun(@(x) generalProcessFcn(x.trialsData, x.rules, 1), data, "UniformOutput", false);
 trialAll = cellfun(@(x) x(~[x.miss]), trialAll, "UniformOutput", false);

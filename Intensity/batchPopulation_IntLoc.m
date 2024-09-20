@@ -1,6 +1,7 @@
-ccc;
+% ccc;
+clear; clc;
 
-MATPATHs = dir("DATA\MAT DATA\single\**\104_res.mat");
+MATPATHs = dir("..\..\DATA\MAT DATA\single\**\104_res.mat");
 SUBJECTs = cellfun(@(x) split(x, '\'), {MATPATHs.folder}', "UniformOutput", false);
 SUBJECTs = cellfun(@(x) string(x{end}), SUBJECTs);
 FIGURESINGLEPATHs = strrep(string({MATPATHs.folder}'), '\DATA\MAT DATA\single\', '\Figures\Single\');
@@ -24,4 +25,4 @@ errorbar(pos, mean(ratio, 1), SE(ratio, 1), "k.-", "LineWidth", 2, "MarkerSize",
 set(gca, 'FontSize', 12);
 xlabel('Normalized change position in percentage (%)');
 ylabel('\DeltaPush for difference ratio');
-title('DMS behavior | Location profile');
+title('DMS behavior | Amplitude change | Location profile');

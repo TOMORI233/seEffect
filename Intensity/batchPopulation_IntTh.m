@@ -1,6 +1,7 @@
-ccc;
+% ccc;
+clear; clc;
 
-MATPATHs = dir("DATA\MAT DATA\single\**\102_res.mat");
+MATPATHs = dir("..\..\DATA\MAT DATA\single\**\102_res.mat");
 SUBJECTs = cellfun(@(x) split(x, '\'), {MATPATHs.folder}', "UniformOutput", false);
 SUBJECTs = cellfun(@(x) string(x{end}), SUBJECTs);
 FIGURESINGLEPATHs = strrep(string({MATPATHs.folder}'), '\DATA\MAT DATA\single\', '\Figures\Single\');
@@ -60,7 +61,7 @@ errorbar(deltaAmp - 0.001, cellfun(@mean, deltaMidTail), cellfun(@SE, deltaMidTa
 errorbar(deltaAmp + 0.001, cellfun(@mean, deltaTailHead), cellfun(@SE, deltaTailHead), 'Color', [0.5, 0.5, 0.5], "Marker", ".", 'LineWidth', 2, "MarkerSize", 15, 'DisplayName', 'Tail - Head');
 set(gca, 'FontSize', 14);
 legend("Location", "best");
-title(['DMS behavior | N = ', num2str(length(data))]);
+title(['DMS behavior | Amplitude change | N = ', num2str(length(data))]);
 xlabel('Difference in amplitude');
 ylabel('\DeltaPush for difference ratio');
 set(gca, "XLimitMethod", "tight");

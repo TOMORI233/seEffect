@@ -17,7 +17,7 @@ clear; clc;
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240703-2024070302\164.mat")); % 4k
 
 % load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\161.mat")); % 1k
-load(fullfile(getRootDirPath(pwd, 2), "DATA\raw\20240710-2024071001\164.mat")); % 1k
+load("D:\Education\Lab\Projects\Start-end effect\DATA\EEG\MAT DATA\behavior\2024071001\164.mat"); % 1k
 
 nChangePeriod = mode(rules.nChangePeriod);
 f0 = mode(rules.f0);
@@ -121,7 +121,8 @@ mHistogram({rtMidC; ...
            "FaceColor", {'r', 'b', 'k'}, ...
            "DisplayName", {['Middle (Mean at ', num2str(mean(rtMidC)), ')'], ...
                            ['Head (Mean at ', num2str(mean(rtHeadC)), ')'], ...
-                           ['Tail (Mean at ', num2str(mean(rtTailC)), ')']});
+                           ['Tail (Mean at ', num2str(mean(rtTailC)), ')']}, ...
+           "DistributionCurve", "show");
 set(gca, 'FontSize', 12);
 title(['Correct | one-way ANOVA p=', num2str(pC)]);
 ylabel('Count');

@@ -5,7 +5,7 @@ data1 = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\162.mat"));
 data2 = dir(fullfile(getRootDirPath(pwd, 2), "DATA\raw\**\163.mat"));
 
 %% 
-data1  = arrayfun(@(x) load(fullfile(x.folder, x.name)), data1);
+data1 = arrayfun(@(x) load(fullfile(x.folder, x.name)), data1);
 data2 = arrayfun(@(x) load(fullfile(x.folder, x.name)), data2);
 
 trialAll1 = arrayfun(@(x) generalProcessFcn(x.trialsData, x.rules, 1), data1, "UniformOutput", false);

@@ -1,0 +1,234 @@
+ccc;
+
+DATAPATHs = dir("..\DATA\NP\RNP_SEeffect_MultiFreqDiff_LocS14_Dur1000\**\ResavespkRes.mat");
+DATAPATHs = arrayfun(@(x) fullfile(x.folder, x.name), DATAPATHs, "UniformOutput", false);
+
+[~, ~, recordID] = cellfun(@(x) getLastDirPath(x, 1), DATAPATHs, "UniformOutput", false);
+
+ACPATHs = DATAPATHs(cellfun(@(x) contains(x, '_AC'), recordID));
+MGBPATHs = DATAPATHs(cellfun(@(x) contains(x, '_MGB'), recordID));
+ICPATHs = DATAPATHs(cellfun(@(x) contains(x, '_IC'), recordID));
+recordID_AC = recordID(cellfun(@(x) contains(x, '_AC'), recordID));
+recordID_MGB = recordID(cellfun(@(x) contains(x, '_MGB'), recordID));
+recordID_IC = recordID(cellfun(@(x) contains(x, '_IC'), recordID));
+
+%% Params
+windowBand = [0, 200]; % ms
+
+binSize = 5; % ms
+step = 5; % ms
+
+alphaVal = 0.05;
+
+%% Load
+load(ICPATHs{1}, "CTLParams");
+pos = CTLParams.ICI2(:); % ms
+window = CTLParams.Window; % ms
+dur = CTLParams.S1Duration(1); % ms
+
+dataIC = cellfun(@(x) load(x).chSpkRes', ICPATHs, "UniformOutput", false);
+
+for index = 1:length(dataIC)
+    dataIC{index} = addfield(dataIC{index}, "pos", num2cell(pos));
+
+    temp = {dataIC{index}.chSPK}';
+    temp = cellfun(@(x) keepfields(x, {'info', 'Trialspike'}), temp, "UniformOutput", false);
+    temp = cellfun(@(x) renamefields(x, {'info', 'Trialspike'}, {'cluster', 'spike'}), temp, "UniformOutput", false);
+    temp = cellfun(@(x) addfield(x, "spike", arrayfun(@(y) cellfun(@(z) z(:, 1), y.spike, "UniformOutput", false, "ErrorHandler", @mErrorFcnEmpty), x, "UniformOutput", false)), temp, "UniformOutput", false);
+    temp = rowFcn(@(x, y) addfield(x{1}, "pos", repmat(y, numel(x{1}), 1)), temp, pos, "UniformOutput", false);
+    temp = cellfun(@(x) addfield(x, "cluster", cellfun(@(y) strcat(recordID_IC{index}, '-', y), {x.cluster}', "UniformOutput", false)), temp, "UniformOutput", false);
+
+    temp = cat(1, temp{:});
+
+    dataIC{index} = temp;
+end
+dataIC = cat(1, dataIC{:});
+
+%% 
+clustersIC = unique({dataIC.cluster}', 'stable');
+dfr = cell(numel(pos) - 1, numel(clustersIC));
+[latencyOnset, latencyOffset] = deal(nan(numel(clustersIC), 1));
+[p, tval] = deal(cell(size(dfr, 2), 1));
+X = pos(2:end);
+
+for cIndex = 1:numel(clustersIC)
+    close all;
+
+    temp = dataIC(strcmp({dataIC.cluster}, clustersIC{cIndex}));
+    [psth, edges] = arrayfun(@(x) calPSTH(x.spike, window, binSize, step), temp, "UniformOutput", false);
+    psth = cat(2, psth{:})';
+    edges = edges{1};
+
+    dpsth = psth(2:end, :) - psth(1, :);
+    dpsth(isnan(dpsth)) = 0;
+    dpsthBand = rowFcn(@(x, y) y(edges >= x + windowBand(1) & edges <= x + windowBand(2)), pos(2:end), dpsth, "UniformOutput", false);
+    dpsthBand = cat(1, dpsthBand{:});
+
+    fr = arrayfun(@(x, y) calFR(x.spike, y + windowBand), temp(2:end), pos(2:end), "UniformOutput", false);
+    frBase = arrayfun(@(x) calFR(temp(1).spike, x + windowBand), pos(2:end), "UniformOutput", false);
+    frBase = cellfun(@mean, frBase, "UniformOutput", false);
+    dfr(:, cIndex) = cellfun(@(x, y) x - y, fr, frBase, "UniformOutput", false);
+
+    latency = calLatency(cellfun(@(x) x - dur, temp(1).spike, "UniformOutput", false), ...
+                         [0, 50], [200, 250]);
+    if ~isempty(latency)
+        latencyOffset(cIndex) = latency;
+    end
+
+    latency = calLatency(temp(1).spike, [0, 50], [-30, 0]);
+    if ~isempty(latency)
+        latencyOnset(cIndex) = latency;
+    end
+
+    tvalTemp = nan(numel(X));
+    pTemp = nan(numel(X));
+    for pIndex1 = 1:numel(X)
+        for pIndex2 = 1:numel(X)
+            [pTemp(pIndex1, pIndex2), statTemp] = mstat.ttest2(dfr{pIndex1, cIndex}, dfr{pIndex2, cIndex});
+            tvalTemp(pIndex1, pIndex2) = statTemp.tstat;
+        end
+    end
+    p{cIndex} = pTemp;
+    tval{cIndex} = tvalTemp;
+
+    % plot
+    Fig = figure;
+    mSubplot(2, 2, 1);
+    rasterData = [];
+    for pIndex = 1:numel(pos)
+        rasterData(pIndex).X = temp(pIndex).spike;
+        if pIndex > 1
+            rasterData(pIndex).lines = struct("X", pos(pIndex), "style", "-", "color", "r", "width", 2);
+        end
+    end
+    mRaster(rasterData, 5, "border", true);
+    yticklabels('');
+    xlim([-50, dur + windowBand(2)]);
+    addLines2Axes(gca, struct("X", {0; 1000}, "style", "-", "color", "r", "width", 1));
+
+    mSubplot(2, 2, 3);
+    imagesc("XData", edges, "YData", 1:size(dpsth, 1), "CData", dpsth);
+    set(gca, "XLimitMethod", "tight");
+    set(gca, "YLimitMethod", "tight");
+    xlim([-50, dur + windowBand(2)]);
+    yticks(1:size(dpsth, 1));
+    yticklabels(num2str(pos(2:end)));
+    xlabel("Time from onset (ms)");
+    ylabel("Change center (ms)");
+    addLines2Axes(gca, struct("X", {0; dur}));
+
+    mSubplot(2, 2, 2, "nSize", [1/4, 1], "alignment_horizontal", "left");
+    rasterData = [];
+    for pIndex = 1:numel(pos)
+        rasterData(pIndex).X = cellfun(@(x) x - pos(pIndex), temp(pIndex).spike, "UniformOutput", false);
+    end
+    mRaster(rasterData, 5, "border", true);
+    yticklabels('');
+    xlim(windowBand);
+
+    mSubplot(2, 2, 4, "nSize", [1/4, 1], "alignment", "left-center");
+    imagesc("XData", edges(edges >= windowBand(1) & edges <= windowBand(2)), "YData", 1:size(dpsthBand, 1), "CData", dpsthBand);
+    set(gca, "XLimitMethod", "tight");
+    set(gca, "YLimitMethod", "tight");
+    yticks(1:size(dpsth, 1));
+    yticklabels(num2str(X));
+    xlabel("Time from change center (ms)");
+    mColorbar("Width", 0.1, "Label", "\DeltaFR (Hz)");
+    scaleAxes("c", "symOpt", "max");
+
+    mSubplot(2, 2, 2, "nSize", [3/5, 0.9], "alignment", "right-top");
+    errorbar(X, cellfun(@mean, dfr(:, cIndex)), cellfun(@SE, dfr(:, cIndex)), ...
+             "Color", "k", "LineWidth", 2);
+    yline(0);
+    xlabel("Time from onset (ms)");
+    ylabel("\DeltaFR (Hz)");
+
+    mSubplot(2, 2, 4, "shape", "square-min", "alignment_horizontal", "right");
+    hold on;
+    imagesc("XData", 1:numel(X), "YData", 1:numel(X), "CData", abs(tval{cIndex}) .* (p{cIndex} < alphaVal));
+    xticks(1:3:numel(X));
+    xticklabels(num2str(X(1:3:end)));
+    yticks(1:3:numel(X));
+    yticklabels(num2str(X(1:3:end)));
+    set(gca, "XLimitMethod", "tight");
+    set(gca, "YLimitMethod", "tight");
+    [~, idx] = max(cellfun(@mean, dfr(:, cIndex)));
+    scatter(idx, idx, 100, "black", "Marker", "+", "LineWidth", 1.5);
+    colormap(gca, slanCM('YlOrRd'));
+    cb = mColorbar("Width", 0.05, "Label", "t-statistics");
+
+    addTitle2Fig(Fig, clustersIC{cIndex});
+    exportgraphics(Fig, ['..\Figures\NP\IC\', clustersIC{cIndex}, '.jpg'], "Resolution", 300);
+end
+
+[~, p0] = cellfun(@ttest, dfr);
+
+%% 
+figure;
+mSubplot(1, 1, 1, "shape", "square-min");
+% plot(pos(2:end), dfr);
+% hold on;
+dfrMean = cellfun(@mean, dfr);
+errorbar(X, mean(dfrMean, 2), SE(dfrMean, 2), "Color", "r", "LineWidth", 2);
+
+figure;
+[~, temp2] = maxt(dfrMean, X, 1);
+mHistogram(temp2);
+
+%% 
+figure;
+% for cIndex = 1:64
+    % subplotIdx = cIndex;
+for cIndex = 65:128
+    subplotIdx = cIndex - 64;
+    mSubplot(8, 8, subplotIdx, "shape", "square-min");
+    hold on;
+    imagesc("XData", 1:numel(X), "YData", 1:numel(X), "CData", abs(tval{cIndex}) .* (p{cIndex} < alphaVal));
+    xticklabels('');
+    yticks(1:3:numel(X));
+    yticklabels(num2str(X(1:3:end)));
+    set(gca, "XLimitMethod", "tight");
+    set(gca, "YLimitMethod", "tight");
+    [~, idx] = max(dfrMean(:, cIndex));
+    scatter(idx, idx, 16, "black", "Marker", "+");
+    xRange = get(gca, "XLim");
+
+    ax = mSubplot(8, 8, subplotIdx, "nSize", [1/4, 1], "alignment", "right-center");
+    plot(1:numel(X), cellfun(@mean, dfr(:, cIndex)), 'k.-');
+    addLines2Axes(gca, struct("Y", 0, "style", "-"));
+    xticklabels('');
+    yticklabels('');
+    ax.View = [90, 90];
+    ax.XDir = "reverse";
+    ax.XLim = xRange;
+end
+colormap(slanCM('YlOrRd'));
+
+%% 
+dfrZ = zscore(dfrMean', 0, 2);
+figure;
+mSubplot(2, 2, 1);
+errorbar(X, mean(dfrZ, 1), SE(dfrZ, 1), "Color", "r", "LineWidth", 2);
+mSubplot(2, 2, 2);
+[~, temp] = maxt(dfrZ, X, 2);
+mHistogram(temp, "BinWidth", 100);
+
+nClusters = 3;
+[clusterIdx, C] = kmeans(dfrZ, nClusters, 'Distance','sqeuclidean','Replicates',20);
+tabulate(clusterIdx);
+
+mSubplot(2, 2, 3);
+hold on;
+colors = lines(nClusters);
+for k = 1:nClusters
+    % class_mean = mean(dfrZ(clusterIdx==k,:),1);
+    plot(X, C(k, :), 'LineWidth', 2, 'Color', colors(k, :), 'DisplayName', ['Cluster ', num2str(k), ' (', num2str(roundn(sum(clusterIdx == k) / numel(clusterIdx) * 100, -2)), '%)']);
+end
+xlabel('Time (ms)');
+ylabel('Z-scored \DeltaFR');
+title('Average \DeltaFR curve per cluster');
+legend("Location", "best");
+
+mSubplot(2, 2, 4);
+[~, temp] = arrayfun(@(x) maxt(dfrZ(clusterIdx == x, :), X, 2), 1:nClusters, "UniformOutput", false);
+mHistogram(temp, "BinWidth", 100);
